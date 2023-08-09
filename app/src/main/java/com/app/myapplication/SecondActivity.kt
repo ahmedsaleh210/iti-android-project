@@ -2,9 +2,13 @@ package com.app.myapplication
 
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -28,11 +32,19 @@ class SecondActivity : AppCompatActivity(), PostCustomClickListener{
         Post("Shahd Bahij", Date(2023, 5,13),"She was in a hurry. Not the standard hurry when you're in a rush to get someplace, but a frantic hurry. The type of hurry where a few seconds could mean life or death. She raced down the road ignoring speed limits and weaving between cars. She was only a few minutes away when traffic came to a dead standstill on the road ahead.", "https://img.freepik.com/free-photo/charming-young-woman-wearing-white-t-shirt-keeping-finger-lip_176532-10467.jpg?w=360"),
     )
 
+    lateinit var preferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySecondBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        preferences = applicationContext.getSharedPreferences("UserSharedPreferences", MODE_PRIVATE)
+        val userName = preferences.getString("UserName", "")
+
+        binding.welcomeTextview.text = "Welcome $userName"
+
+
 //        val resultIntent = Intent()
 //        val name = intent.getStringExtra("name")
 //        val gender = intent.getStringExtra("gender")
@@ -81,5 +93,29 @@ class SecondActivity : AppCompatActivity(), PostCustomClickListener{
 
 
         startActivity(intent)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_second_activity, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        return when(item.itemId){
+            R.id.logout -> {
+                val editor = preferences.edit()
+                editor.remove("UserName")
+                editor.remove("Password")
+                editor.putBoolean("IsLogin", false)
+                editor.commit()
+                startActivity(Intent(this@SecondActivity, MainActivity::class.java))
+                finish()
+                true
+            }else -> {
+                super.onOptionsItemSelected(item)
+            }
+        }
+
     }
 }

@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-
+    <TextView
+        android:id="@+id/welcome_textview"
+        android:text="Welcome Ahmed"
+        android:layout_margin="15dp"
+        android:textSize="25sp"
+        android:textColor="@color/blue"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/posts_recyclerview"
         android:layout_width="match_parent"
@@ -16,4 +26,4 @@
         tools:layout_editor_absoluteY="-330dp"
         tools:listitem="@layout/post_item" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

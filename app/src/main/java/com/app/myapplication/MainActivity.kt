@@ -1,8 +1,10 @@
 package com.app.myapplication
 
 import android.app.Dialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -15,7 +17,8 @@ import com.app.myapplication.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    
+
+    lateinit var pref: SharedPreferences
 
     val request_code: Int = 101
 
@@ -24,9 +27,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         println("Activity Created")
+        pref = applicationContext.getSharedPreferences("UserSharedPreferences", Context.MODE_PRIVATE)
+        binding.emailEditText.setText( pref.getString("UserName", ""))
+        binding.passwordEditText.setText( pref.getString("Password", ""))
 
 
         val name = binding.emailEditText.text.toString()
+        val passwoed = binding.passwordEditText.text.toString()
         val selectedRadioButtonId = binding.radioGroup.checkedRadioButtonId
         val selectedRadioButton = findViewById<RadioButton>(selectedRadioButtonId)
         val gender = selectedRadioButton.text.toString()
@@ -39,12 +46,20 @@ class MainActivity : AppCompatActivity() {
 
         binding.loginButton.setOnClickListener {
 
+            val editor = pref.edit()
+
+            editor.putString("UserName",binding.emailEditText.text.toString())
+            editor.putString("Password", binding.passwordEditText.text.toString())
+            editor.putBoolean("IsLogin", true)
+            editor.commit()
+
             val intent = Intent(this, SecondActivity::class.java)
             intent.putExtra("name", name)
             intent.putExtra("gender", gender)
             intent.putExtra("favouriteSports", favouriteSports)
 
-            startActivityForResult(intent,request_code)
+            startActivity(intent)
+            finish()
         }
 
         binding.showUpButton.setOnClickListener {
@@ -58,7 +73,6 @@ class MainActivity : AppCompatActivity() {
             })
             val alertDialog = dialogBuilder.create()
             alertDialog.show()
-
         }
     }
 
