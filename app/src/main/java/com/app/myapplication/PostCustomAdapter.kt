@@ -6,13 +6,14 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import com.app.myapplication.databinding.PostItemBinding
+import com.app.myapplication.models.User
 import com.squareup.picasso.Picasso
 
-class PostCustomAdapter(var postsList: ArrayList<Post>, var listener: PostCustomClickListener): RecyclerView.Adapter<PostCustomAdapter.ViewHolder>() {
+class PostCustomAdapter(var userList: List<User>, var listener: PostCustomClickListener): RecyclerView.Adapter<PostCustomAdapter.ViewHolder>() {
     inner class ViewHolder(val binding: PostItemBinding): RecyclerView.ViewHolder(binding.root)
 
     override fun getItemCount(): Int {
-        return postsList.size
+        return userList.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -21,21 +22,21 @@ class PostCustomAdapter(var postsList: ArrayList<Post>, var listener: PostCustom
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.binding.personTextview.text = postsList[position].userName
-        holder.binding.dateTextview.text = "${postsList[position].postDate.day} / ${postsList[position].postDate.month} / ${postsList[position].postDate.year}"
-        holder.binding.contentTextview.text = postsList[position].postContent
+        holder.binding.personTextview.text = "${userList[position].firstName} ${userList[position].lastName}"
+        holder.binding.dateTextview.text = "${userList[position].id}"
+        holder.binding.contentTextview.text = userList[position].email
 
-        if (postsList[position].userImage.isNotEmpty()){
+        if (userList[position].avatar.isNotEmpty()){
             Picasso.get()
-                .load(postsList[position].userImage)
+                .load(userList[position].avatar)
                 .resize(140, 100)
                 .centerCrop()
                 .into(holder.binding.personImageView)
         }
-
-        holder.binding.viewDetailsButton.setOnClickListener {
-            listener.onItemClickListener(postsList[position], position)
-        }
+//
+//        holder.binding.viewDetailsButton.setOnClickListener {
+//            listener.onItemClickListener(userList[position], position)
+//        }
 
     }
 }

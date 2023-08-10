@@ -7,13 +7,18 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.app.myapplication.Utils.ApiInterface
+import com.app.myapplication.Utils.RetrofitClient
 import com.app.myapplication.databinding.ActivitySecondBinding
+import kotlinx.coroutines.launch
 import java.util.Date
 
 class SecondActivity : AppCompatActivity(), PostCustomClickListener{
@@ -45,41 +50,34 @@ class SecondActivity : AppCompatActivity(), PostCustomClickListener{
         binding.welcomeTextview.text = "Welcome $userName"
 
 
-//        val resultIntent = Intent()
-//        val name = intent.getStringExtra("name")
-//        val gender = intent.getStringExtra("gender")
-//        val favouriteSports = intent.getStringExtra("favouriteSports")
-//        //Toast.makeText(this, "Name is: $name, Gender is $gender, Favourites Sports is $favouriteSports", Toast.LENGTH_LONG).show()
-//
-//        val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
-//        val dialog = Dialog(this)
-//        dialogBuilder.setTitle(getString(R.string.info_popUp_title))
-//        dialogBuilder.setMessage("Name is: $name, Gender is $gender, Favourites Sports is $favouriteSports")
-//        dialogBuilder.setCancelable(true)
-//        dialogBuilder.setPositiveButton("Cancel", DialogInterface.OnClickListener { dialogInterface, i ->
-//            dialog.cancel()
-//         })
-//        val alertDialog = dialogBuilder.create()
-//        alertDialog.show()
-
-
-//        binding.loginByButton.setOnClickListener {
-//            val selectedRadioButtonId = binding.radioGroup.checkedRadioButtonId
-//            val selectedRadioButton = findViewById<RadioButton>(selectedRadioButtonId)
-//            resultIntent.putExtra("login_by", selectedRadioButton.text.toString())
-//            setResult(Activity.RESULT_OK, resultIntent)
-//            finish()
-//        }
 
 
 
 
 
-        postAdapter = PostCustomAdapter(postsList, this@SecondActivity)
-        binding.postsRecyclerview.adapter = postAdapter
 
+            var retrofit = RetrofitClient.getInstance()
+            var apiInterface = retrofit.create(ApiInterface::class.java)
 
+            lifecycleScope.launch() {
+                try{
 
+                    val response = apiInterface.getUsers()
+
+                    if(response.isSuccessful){
+                        val users = response.body()?.data
+                        Toast.makeText(this@SecondActivity, users?.get(0)?.email, Toast.LENGTH_SHORT).show()
+                        postAdapter = PostCustomAdapter(response.body()?.data ?: listOf(), this@SecondActivity)
+                        binding.postsRecyclerview.adapter = postAdapter
+
+                    }
+                }
+                catch (error:Exception){
+                    Log.d("Error SAid",error.toString())
+                    Toast.makeText(this@SecondActivity, error.toString(), Toast.LENGTH_SHORT).show()
+
+                }
+        }
     }
 
     override fun onItemClickListener(post: Post, position: Int) {
@@ -118,4 +116,6 @@ class SecondActivity : AppCompatActivity(), PostCustomClickListener{
         }
 
     }
+
+
 }
