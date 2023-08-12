@@ -7,12 +7,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/welcome_textview"
-        android:text="Welcome Ahmed"
+    <EditText
+        android:id="@+id/query_id_edit_text"
         android:layout_margin="15dp"
         android:textSize="25sp"
         android:textColor="@color/blue"
+        android:textStyle="bold"
+        android:hint="Type user id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:id="@+id/query_id_button"
+        android:layout_margin="15dp"
+        android:textSize="25sp"
+        android:text="Get Posts"
+        android:textColor="@color/white"
         android:textStyle="bold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>

@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import com.app.myapplication.Utils.ApiInterface
 import com.app.myapplication.Utils.RetrofitClient
 import com.app.myapplication.databinding.ActivitySecondBinding
+import com.app.myapplication.models.PostModel
 import kotlinx.coroutines.launch
 import java.util.Date
 
@@ -47,49 +48,33 @@ class SecondActivity : AppCompatActivity(), PostCustomClickListener{
         preferences = applicationContext.getSharedPreferences("UserSharedPreferences", MODE_PRIVATE)
         val userName = preferences.getString("UserName", "")
 
-        binding.welcomeTextview.text = "Welcome $userName"
-
-
-
-
-
-
-
-
             var retrofit = RetrofitClient.getInstance()
             var apiInterface = retrofit.create(ApiInterface::class.java)
 
-            lifecycleScope.launch() {
-                try{
+            binding.queryIdButton.setOnClickListener(){
+                lifecycleScope.launch() {
+                    try{
+                        val response = apiInterface.getPostsByUserId(binding.queryIdEditText.text.toString().toInt())
+                        if(response.isSuccessful){
+                            val posts = response.body()
+                            Toast.makeText(this@SecondActivity, posts?.get(0)?.body, Toast.LENGTH_SHORT).show()
+                            postAdapter = PostCustomAdapter(response.body() ?: listOf(), this@SecondActivity)
+                            binding.postsRecyclerview.adapter = postAdapter
 
-                    val response = apiInterface.getUsers()
-
-                    if(response.isSuccessful){
-                        val users = response.body()?.data
-                        Toast.makeText(this@SecondActivity, users?.get(0)?.email, Toast.LENGTH_SHORT).show()
-                        postAdapter = PostCustomAdapter(response.body()?.data ?: listOf(), this@SecondActivity)
-                        binding.postsRecyclerview.adapter = postAdapter
+                        }
+                    }
+                    catch (error:Exception){
+                        Log.d("Error Said",error.toString())
+                        Toast.makeText(this@SecondActivity, error.toString(), Toast.LENGTH_SHORT).show()
 
                     }
                 }
-                catch (error:Exception){
-                    Log.d("Error SAid",error.toString())
-                    Toast.makeText(this@SecondActivity, error.toString(), Toast.LENGTH_SHORT).show()
-
-                }
-        }
+            }
     }
 
-    override fun onItemClickListener(post: Post, position: Int) {
+    override fun onItemClickListener(post: PostModel, position: Int) {
         val intent = Intent(this@SecondActivity, ThirdActivity::class.java)
-        val userName = postsList[position].userName
-        val postContent = postsList[position].postContent
-        val userImage = postsList[position].userImage
-        intent.putExtra("userName", userName)
-        intent.putExtra("userImage", userImage)
-        intent.putExtra("postContent", postContent)
-
-
+        intent.putExtra("postId", post.id)
         startActivity(intent)
     }
 
@@ -114,7 +99,6 @@ class SecondActivity : AppCompatActivity(), PostCustomClickListener{
                 super.onOptionsItemSelected(item)
             }
         }
-
     }
 
 

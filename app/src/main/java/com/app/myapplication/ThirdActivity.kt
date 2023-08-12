@@ -2,8 +2,14 @@ package com.app.myapplication
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
+import com.app.myapplication.Utils.ApiInterface
+import com.app.myapplication.Utils.RetrofitClient
 import com.app.myapplication.databinding.ActivityThirdBinding
 import com.squareup.picasso.Picasso
+import kotlinx.coroutines.launch
 
 class ThirdActivity : AppCompatActivity() {
     private lateinit var binding: ActivityThirdBinding
@@ -11,20 +17,25 @@ class ThirdActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityThirdBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val postId = intent.getIntExtra("postId",0)
 
-        val userName = intent.getStringExtra("userName")
-        val userImage = intent.getStringExtra("userImage")
-        val postContent = intent.getStringExtra("postContent")
+        var retrofit = RetrofitClient.getInstance()
+        var apiInterface = retrofit.create(ApiInterface::class.java)
 
-        binding.userNameTextview.text = userName
-        binding.postContentTextview.text = postContent
+        lifecycleScope.launch() {
+            try{
+                val response = apiInterface.getCommentsByPostId(postId)
+                if(response.isSuccessful){
+                    val comments = response.body()
+                    binding.commentsRecyclerview.adapter = CommentCustomAdapter(response.body() ?: listOf())
+                }
+            }
+            catch (error:Exception){
+                Log.d("Error Said",error.toString())
+                Toast.makeText(this@ThirdActivity, error.toString(), Toast.LENGTH_SHORT).show()
 
-        if (userImage!!.isNotEmpty()){
-            Picasso.get()
-                .load(userImage)
-                .resize(140, 100)
-                .centerCrop()
-                .into(binding.userImageImview)
+            }
         }
+
     }
 }

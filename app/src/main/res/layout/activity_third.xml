@@ -1,83 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ThirdActivity">
-    <TextView
-        android:text="Post Details"
-        android:textSize="30sp"
-        android:textColor="@color/blue"
-    android:layout_marginTop="20dp"
-        android:textStyle="bold"
-        android:gravity="center_horizontal"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/comments_recyclerview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-<ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
-    <androidx.cardview.widget.CardView
-        android:scrollbarAlwaysDrawVerticalTrack="true"
-        android:background="@drawable/image_background_shape"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:itemCount="10"
+        tools:layout_editor_absoluteX="-16dp"
+        tools:layout_editor_absoluteY="-330dp"
+        tools:listitem="@layout/comment_item" />
 
-        <LinearLayout
-            android:layout_marginHorizontal="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginVertical="15dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:text="User Name: "
-                    android:textSize="24sp"
-                    android:textColor="@color/blue"
-                    android:layout_marginRight="20dp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-                <TextView
-                    android:id="@+id/userName_textview"
-                    android:text="Ahmed Saleh"
-                    android:textSize="24sp"
-                    android:textColor="@color/grey"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/userImage_imview"
-                android:src="@drawable/person1"
-                android:background="@drawable/image_background_shape"
-                android:layout_width="match_parent"
-                android:padding="10dp"
-                android:layout_height="260dp"/>
-
-            <TextView
-                android:text="Post Content: "
-                android:textColor="@color/blue"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:layout_marginTop="20dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-            <TextView
-                android:id="@+id/postContent_textview"
-                android:textColor="@color/blue"
-                android:textSize="20sp"
-                android:layout_marginTop="15dp"
-                android:text="His mother had always taught him not to ever think of himself as better than others. He'd tried to live by this motto. He never looked down on those who were less fortunate or who had less money than him. But the stupidity of the group of people he was talking to made him change his mind."
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-</ScrollView>
 </LinearLayout>

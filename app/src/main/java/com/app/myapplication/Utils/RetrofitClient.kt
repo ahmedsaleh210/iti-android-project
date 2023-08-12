@@ -10,7 +10,7 @@ object RetrofitClient {
         var interceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
         var okHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
         var retrofit: Retrofit = Retrofit.Builder()
-            .baseUrl("https://reqres.in")
+            .baseUrl("https://jsonplaceholder.typicode.com/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
