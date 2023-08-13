@@ -48,7 +48,7 @@ class SecondActivity : AppCompatActivity(), PostCustomClickListener{
         preferences = applicationContext.getSharedPreferences("UserSharedPreferences", MODE_PRIVATE)
         val userName = preferences.getString("UserName", "")
 
-            var retrofit = RetrofitClient.getInstance()
+            var retrofit = RetrofitClient.getInstance("https://jsonplaceholder.typicode.com/")
             var apiInterface = retrofit.create(ApiInterface::class.java)
 
             binding.queryIdButton.setOnClickListener(){

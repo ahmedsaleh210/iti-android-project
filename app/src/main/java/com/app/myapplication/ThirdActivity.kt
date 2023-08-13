@@ -19,7 +19,7 @@ class ThirdActivity : AppCompatActivity() {
         setContentView(binding.root)
         val postId = intent.getIntExtra("postId",0)
 
-        var retrofit = RetrofitClient.getInstance()
+        var retrofit = RetrofitClient.getInstance("https://jsonplaceholder.typicode.com/")
         var apiInterface = retrofit.create(ApiInterface::class.java)
 
         lifecycleScope.launch() {

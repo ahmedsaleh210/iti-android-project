@@ -13,7 +13,14 @@ import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.app.myapplication.Utils.ApiInterface
+import com.app.myapplication.Utils.RetrofitClient
 import com.app.myapplication.databinding.ActivityMainBinding
+import com.app.myapplication.models.LoginBodyRequest
+import org.json.JSONException
+import org.json.JSONObject
+import retrofit2.Retrofit
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -22,14 +29,16 @@ class MainActivity : AppCompatActivity() {
 
     val request_code: Int = 101
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         println("Activity Created")
-        pref = applicationContext.getSharedPreferences("UserSharedPreferences", Context.MODE_PRIVATE)
-        binding.emailEditText.setText( pref.getString("UserName", ""))
-        binding.passwordEditText.setText( pref.getString("Password", ""))
+
+
+        pref =
+            applicationContext.getSharedPreferences("UserSharedPreferences", Context.MODE_PRIVATE)
 
 
         val name = binding.emailEditText.text.toString()
@@ -38,43 +47,81 @@ class MainActivity : AppCompatActivity() {
         val selectedRadioButton = findViewById<RadioButton>(selectedRadioButtonId)
         val gender = selectedRadioButton.text.toString()
         var favouriteSports = "Favourite Sports: "
-        if(binding.footballCheckBox.isChecked)
+        if (binding.footballCheckBox.isChecked)
             favouriteSports += "Football "
-        if(binding.basketballCheckBox.isChecked)
+        if (binding.basketballCheckBox.isChecked)
             favouriteSports += "Basketball "
 
 
+        var retrofit = RetrofitClient.getInstance("http://dummyjson.com/")
+        var apiInterface = retrofit.create(ApiInterface::class.java)
+
         binding.loginButton.setOnClickListener {
 
-            val editor = pref.edit()
+            lifecycleScope.launchWhenCreated {
+                val body = LoginBodyRequest(
+                    binding.emailEditText.text.toString(),
+                    binding.passwordEditText.text.toString()
+                )
+                val response = apiInterface.login(body)
 
-            editor.putString("UserName",binding.emailEditText.text.toString())
-            editor.putString("Password", binding.passwordEditText.text.toString())
-            editor.putBoolean("IsLogin", true)
-            editor.commit()
+                if (response.isSuccessful) {
+                    moveToNextScreen()
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    if (errorBody != null) {
+                        try {
+                            val errorJson = JSONObject(errorBody)
+                            val errorMessage = errorJson.getString("message")
+                            Toast.makeText(this@MainActivity, errorMessage, Toast.LENGTH_SHORT)
+                                .show()
+                        } catch (e: JSONException) {
+                            e.printStackTrace()
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Error parsing response",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        Toast.makeText(this@MainActivity, "Unknown error", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
 
-            val intent = Intent(this, SecondActivity::class.java)
-            intent.putExtra("name", name)
-            intent.putExtra("gender", gender)
-            intent.putExtra("favouriteSports", favouriteSports)
 
-            startActivity(intent)
-            finish()
-        }
+            }
 
-        binding.showUpButton.setOnClickListener {
-            val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
-            val dialog = Dialog(this)
-            dialogBuilder.setTitle(getString(R.string.info_popUp_title))
-            dialogBuilder.setMessage("Name is: $name, Gender is $gender, Favourites Sports is $favouriteSports")
-            dialogBuilder.setCancelable(true)
-            dialogBuilder.setPositiveButton("Cancel", DialogInterface.OnClickListener { dialogInterface, i ->
-                dialog.cancel()
-            })
-            val alertDialog = dialogBuilder.create()
-            alertDialog.show()
+            binding.showUpButton.setOnClickListener {
+                val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
+                val dialog = Dialog(this)
+                dialogBuilder.setTitle(getString(R.string.info_popUp_title))
+                dialogBuilder.setMessage("Name is: $name, Gender is $gender, Favourites Sports is $favouriteSports")
+                dialogBuilder.setCancelable(true)
+                dialogBuilder.setPositiveButton(
+                    "Cancel",
+                    DialogInterface.OnClickListener { dialogInterface, i ->
+                        dialog.cancel()
+                    })
+                val alertDialog = dialogBuilder.create()
+                alertDialog.show()
+            }
         }
     }
+
+    fun moveToNextScreen(){
+        val editor = pref.edit()
+
+        editor.putString("UserName",binding.emailEditText.text.toString())
+        editor.putString("Password", binding.passwordEditText.text.toString())
+        editor.putBoolean("IsLogin", true)
+        editor.commit()
+
+        val intent = Intent(this, SecondActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main_activity, menu)
