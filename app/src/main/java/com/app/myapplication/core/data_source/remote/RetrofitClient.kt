@@ -1,4 +1,4 @@
-package com.app.myapplication.Utils
+package com.app.myapplication.core.data_source.remote
 
 import com.google.gson.Gson
 import okhttp3.OkHttpClient
@@ -8,10 +8,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
     fun getInstance(baseUrl: String): Retrofit {
-        var interceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-        var okHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
+        val interceptor = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+        val okHttpClient = OkHttpClient.Builder().addInterceptor(interceptor).build()
         return Retrofit.Builder()
-            .baseUrl(baseUrl)// "https://jsonplaceholder.typicode.com/"
+            .baseUrl(baseUrl)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

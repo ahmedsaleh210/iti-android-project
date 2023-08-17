@@ -25,17 +25,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ThirdActivity"
+            android:name=".Ui.third.ThirdActivity"
             android:exported="false"
             android:hardwareAccelerated="false"/>
         <activity
-            android:name=".MainActivity"
+            android:name=".Ui.login.LoginActivity"
             android:exported="false"
             android:hardwareAccelerated="false">
 
         </activity>
         <activity
-            android:name=".SecondActivity"
+            android:name=".Ui.second.SecondActivity"
             android:hardwareAccelerated="false" />
     </application>
 

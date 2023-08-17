@@ -1,14 +1,14 @@
-package com.app.myapplication
+package com.app.myapplication.Ui.third
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
-import com.app.myapplication.Utils.ApiInterface
-import com.app.myapplication.Utils.RetrofitClient
+import com.app.myapplication.CommentCustomAdapter
+import com.app.myapplication.core.data_source.remote.ApiInterface
+import com.app.myapplication.core.data_source.remote.RetrofitClient
 import com.app.myapplication.databinding.ActivityThirdBinding
-import com.squareup.picasso.Picasso
 import kotlinx.coroutines.launch
 
 class ThirdActivity : AppCompatActivity() {

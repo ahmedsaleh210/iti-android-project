@@ -1,4 +1,4 @@
-package com.app.myapplication
+package com.app.myapplication.Ui.login
 
 import android.app.Dialog
 import android.content.Context
@@ -13,21 +13,27 @@ import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import com.app.myapplication.Utils.ApiInterface
-import com.app.myapplication.Utils.RetrofitClient
+import com.app.myapplication.R
+import com.app.myapplication.Ui.second.SecondActivity
+import com.app.myapplication.Utils.ViewModelFactory
+import com.app.myapplication.core.data_source.remote.ApiInterface
+import com.app.myapplication.core.data_source.remote.RetrofitClient
 import com.app.myapplication.databinding.ActivityMainBinding
-import com.app.myapplication.models.LoginBodyRequest
+import com.app.myapplication.core.model.body.LoginBodyRequest
+import com.app.myapplication.core.repo.LoginRepository
 import org.json.JSONException
 import org.json.JSONObject
-import retrofit2.Retrofit
 
-class MainActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     lateinit var pref: SharedPreferences
 
     val request_code: Int = 101
+
+    lateinit var viewModel: LoginViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,13 +42,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         println("Activity Created")
 
-
         pref =
             applicationContext.getSharedPreferences("UserSharedPreferences", Context.MODE_PRIVATE)
 
 
         val name = binding.emailEditText.text.toString()
-        val passwoed = binding.passwordEditText.text.toString()
+        val password = binding.passwordEditText.text.toString()
         val selectedRadioButtonId = binding.radioGroup.checkedRadioButtonId
         val selectedRadioButton = findViewById<RadioButton>(selectedRadioButtonId)
         val gender = selectedRadioButton.text.toString()
@@ -53,46 +58,54 @@ class MainActivity : AppCompatActivity() {
             favouriteSports += "Basketball "
 
 
-        var retrofit = RetrofitClient.getInstance("http://dummyjson.com/")
-        var apiInterface = retrofit.create(ApiInterface::class.java)
+        val retrofit = RetrofitClient.getInstance("https://dummyjson.com/")
+        val apiInterface = retrofit.create(ApiInterface::class.java)
+        val repository = LoginRepository(apiInterface)
+        val factory = ViewModelFactory(repository, null)
+        viewModel = ViewModelProvider(this, factory).get(LoginViewModel::class.java)
 
         binding.loginButton.setOnClickListener {
 
-            lifecycleScope.launchWhenCreated {
-                val body = LoginBodyRequest(
-                    binding.emailEditText.text.toString(),
-                    binding.passwordEditText.text.toString()
-                )
-                val response = apiInterface.login(body)
+            val username = binding.emailEditText.text.toString()
+            val password = binding.passwordEditText.text.toString()
+            viewModel.login(username, password)
 
-                if (response.isSuccessful) {
-                    moveToNextScreen()
-                } else {
-                    val errorBody = response.errorBody()?.string()
+            }
+
+        viewModel.loginResult.observe(this) { response ->
+            if (response.isSuccessful) {
+                val userResponse = response.body()
+                // Handle the user response
+                moveToNextScreen()
+            } else {
+                val errorBody = response.errorBody()?.toString()
                     if (errorBody != null) {
                         try {
                             val errorJson = JSONObject(errorBody)
                             val errorMessage = errorJson.getString("message")
-                            Toast.makeText(this@MainActivity, errorMessage, Toast.LENGTH_SHORT)
+                            Toast.makeText(this@LoginActivity, errorMessage, Toast.LENGTH_SHORT)
                                 .show()
                         } catch (e: JSONException) {
                             e.printStackTrace()
                             Toast.makeText(
-                                this@MainActivity,
+                                this@LoginActivity,
                                 "Error parsing response",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
                     } else {
-                        Toast.makeText(this@MainActivity, "Unknown error", Toast.LENGTH_SHORT)
+                        Toast.makeText(this@LoginActivity, "Unknown error", Toast.LENGTH_SHORT)
                             .show()
                     }
-                }
-
-
             }
+        }
 
-            binding.showUpButton.setOnClickListener {
+
+
+
+
+
+        binding.showUpButton.setOnClickListener {
                 val dialogBuilder: AlertDialog.Builder = AlertDialog.Builder(this)
                 val dialog = Dialog(this)
                 dialogBuilder.setTitle(getString(R.string.info_popUp_title))
@@ -107,9 +120,9 @@ class MainActivity : AppCompatActivity() {
                 alertDialog.show()
             }
         }
-    }
 
     fun moveToNextScreen(){
+
         val editor = pref.edit()
 
         editor.putString("UserName",binding.emailEditText.text.toString())
@@ -117,7 +130,7 @@ class MainActivity : AppCompatActivity() {
         editor.putBoolean("IsLogin", true)
         editor.commit()
 
-        val intent = Intent(this, SecondActivity::class.java)
+        val intent = Intent(this@LoginActivity, SecondActivity::class.java)
         startActivity(intent)
         finish()
     }

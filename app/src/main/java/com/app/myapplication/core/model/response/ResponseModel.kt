@@ -1,5 +1,7 @@
-package com.app.myapplication.models
+package com.app.myapplication.core.model.body
 
+import com.app.myapplication.models.Support
+import com.app.myapplication.models.User
 import com.google.gson.annotations.SerializedName
 
 data class ResponseUserList (

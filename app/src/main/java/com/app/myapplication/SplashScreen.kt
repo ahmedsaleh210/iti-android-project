@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Window
 import android.view.WindowManager
+import com.app.myapplication.Ui.login.LoginActivity
+import com.app.myapplication.Ui.second.SecondActivity
 import com.app.myapplication.databinding.ActivitySplashScreenBinding
 
 class SplashScreen : AppCompatActivity() {
@@ -29,7 +31,7 @@ class SplashScreen : AppCompatActivity() {
                 startActivity(Intent(this@SplashScreen, SecondActivity::class.java))
 
             }else{
-                startActivity(Intent(this@SplashScreen, MainActivity::class.java))
+                startActivity(Intent(this@SplashScreen, LoginActivity::class.java))
             }
             finish()
         }, 3000)

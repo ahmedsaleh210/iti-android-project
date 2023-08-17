@@ -1,4 +1,4 @@
-package com.app.myapplication.models
+package com.app.myapplication.core.model.response
 
 import com.google.gson.annotations.SerializedName
 
